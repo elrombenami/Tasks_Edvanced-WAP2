@@ -1,9 +1,42 @@
 import 'bootstrap/dist/css/bootstrap.css'
-import ListGroup from './ListGroup.tsx'
-import {useState} from 'react'
+import { useEffect, useState } from "react";
+import PostsList from "./ListGroup"
+import axios from "axios"
 
+interface Post {
+  _id: string,
+  title: string,
+  content: string,
+  owner: string
+}
 
 function App() {
+  const [items, setItems] = useState<string[]>([]);
+
+  useEffect(() => {
+    console.log("Effect")
+    const fetchData = async () => {
+      try {
+        const res = await axios.get<Post[]>("http://localhost:3000/posts")
+        setItems(res.data.map((item) => item.title))
+      } catch (error) {
+        console.log(error)
+      }
+    }
+    fetchData()
+  }, [])
+
+  return (
+    <div>
+      <PostsList title="Posts" items={items} onItemselectd={(index) => { console.log("Selected " + index) }} />
+      <button className={'btn btn-primary m-3'} onClick={() => { setItems([...items]) }}>refresh</button>
+    </div>
+  )
+}
+
+export default App
+
+/*function App() {
   const[index1 , setIndex1] = useState(-1);
   const items1 = ["Item 1", "Item 2", "Item 3", "Item 4", "Item 5"];
   const items2 = ["Item 6", "Item 7", "Item 8", "Item 9", "Item 10"];
@@ -68,5 +101,4 @@ function App2() {
   )
 }
 
-
-export default App2
+export default App */
